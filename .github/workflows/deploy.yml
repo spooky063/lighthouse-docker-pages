@@ -29,14 +29,16 @@ jobs:
       image: justinribeiro/lighthouse
       options: --cap-add=SYS_ADMIN --user root
       volumes:
-        - ./lighthouse-result/:/home/chrome/reports
+        - ${{ github.workspace }}/lighthouse-result/:/home/chrome/reports
       env:
         LIGHTHOUSE_URL: ${{ inputs.url }}
 
     steps:
+      - run: echo "NOW=$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV
+
       - name: Execute lighthouse
         run: |
-          echo y | /usr/bin/lighthouse --chrome-flags="--headless --disable-gpu --no-sandbox --disable-dev-shm-usage" ${{ inputs.url }}
+          echo y | /usr/bin/lighthouse --output-path=./${{ inputs.url }}_${{ env.NOW }}.html --chrome-flags="--headless --disable-gpu --no-sandbox --disable-dev-shm-usage" ${{ inputs.url }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -44,7 +46,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './lighthouse-result'
+          path: "${{ github.workspace }}/lighthouse-result"
 
       - name: Deploy to GitHub Pages
         id: deployment
