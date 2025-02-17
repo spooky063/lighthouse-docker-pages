@@ -29,8 +29,6 @@ jobs:
       image: justinribeiro/lighthouse
       volumes:
         - ./lighthouse-result/:/home/chrome/reports
-      capp_add:
-        - SYS_ADMIN
       env:
         LIGHTHOUSE_URL: ${{ inputs.url }}
 
