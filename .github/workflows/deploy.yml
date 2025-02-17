@@ -49,6 +49,14 @@ jobs:
         with:
           path: "${{ github.workspace }}/lighthouse-result"
 
+      - name: Push Github Pages Summary
+        run: |
+          USERNAME=$(echo ${{ github.repository }} | cut -d'/' -f1)
+          REPO=$(echo ${{ github.repository }} | cut -d'/' -f2)
+          PAGES_URL="https://${USERNAME}.github.io/${REPO}/${{ env.URL }}_${{ env.NOW }}.html"
+          echo "### Step Completed :white_check_mark:" >> $GITHUB_STEP_SUMMARY
+          echo "URL: ${PAGES_URL}" >> $GITHUB_STEP_SUMMARY
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
