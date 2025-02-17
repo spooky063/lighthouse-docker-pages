@@ -1,0 +1,52 @@
+# https://github.com/actions/starter-workflows/blob/main/pages/static.yml
+name: Deploy lighthouse results to GitHub Pages
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: 'URL of the lighthouse results'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    container:
+      image: justinribeiro/lighthouse
+      volumes:
+        - ./lighthouse-result/:/home/chrome/reports
+      capp_add:
+        - SYS_ADMIN
+      env:
+        LIGHTHOUSE_URL: ${{ inputs.url }}
+
+    steps:
+      - name: Execute lighthouse
+        run: |
+          echo y | /usr/bin/lighthouse --quiet --chrome-flags="--headless --disable-gpu --disable-dev-shm-usage"${{ inputs.url }}
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './lighthouse-result'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
