@@ -35,7 +35,7 @@ jobs:
     steps:
       - name: Execute lighthouse
         run: |
-          echo y | /usr/bin/lighthouse --quiet --chrome-flags="--headless --disable-gpu --disable-dev-shm-usage"${{ inputs.url }}
+          echo y | /usr/bin/lighthouse --chrome-flags="--headless --disable-gpu --disable-dev-shm-usage" ${{ inputs.url }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
